@@ -30,13 +30,10 @@ jobs:
               curl -sSL -o "$FILENAME" "$URL"
           }
 
-          
           download_tool "1eiWhYPSOAdvPX4gAebBZs1G9sWli_0aH" "git-2.56.0-aarch64.tar.gz"
           download_tool "1swSEEyfo2RxqeD6v14jAr67l8BILNakK" "curl-8.23.0-aarch64.tar.gz"
           download_tool "1mlTuZvOq87EldaHWt4weTl1PtOQ_kLru" "openjdk-25.0.5-aarch64.tar.gz"
-
-          
-          download_tool "1ZAMy56LWwflNS23n1OsM_9ApoQdwz6qj" "zsh-5.9.2-aarch64.tar.gz"
+          download_tool "1jCoJ4ZrTaQjcSyDi4zcVzPZpmYBaETCV" "zsh-5.9.2-aarch64.tar.gz"
           download_tool "1jWtXVRcc-D0yCeT-ey79hi0xwubqJIsu" "aapt2-2.20-android-16.0.0_r4-aarch64.tar.gz"
 
           echo "All downloaded assets:"
@@ -47,11 +44,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TAG="v1.0.0"
-
+          
           if ! gh release view "$TAG" &>/dev/null; then
               gh release create "$TAG" -t "Lumina Binaries $TAG" --notes ""
           fi
-          
           
           gh release upload "$TAG" *.tar.gz --clobber
 
@@ -65,7 +61,6 @@ jobs:
           
           mkdir -p "$MANIFEST_DIR"
           
-
           MANIFEST_VERSION=1
           if [ -f "$MANIFEST_FILE" ]; then
               CURRENT_VERSION=$(jq -r '.manifestVersion // 0' "$MANIFEST_FILE")
@@ -73,7 +68,6 @@ jobs:
           fi
           
           TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          
           
           jq -n \
             --arg schema "1.0.0" \
@@ -128,6 +122,7 @@ jobs:
           
           echo "Updated Manifest Content:"
           cat "$MANIFEST_FILE"
+          
           git add "$MANIFEST_FILE"
-          git commit -m "chore(manifest): update to version $MANIFEST_VERSION with Zsh and AAPT2" || echo "No changes to commit"
-          git push
+          git commit -m "chore(manifest): update fixed zsh binary and manifest version $MANIFEST_VERSION" || echo "No changes to commit"
+          git push origin HEAD:main
