@@ -1,9 +1,9 @@
 {
   "schemaVersion": "1.0.0",
-  "manifestVersion": 1,
+  "manifestVersion": 2,
   "platform": "android",
   "architecture": "aarch64",
-  "updatedAt": "2026-10-28T14:03:36Z",
+  "updatedAt": "2026-10-28T14:45:44Z",
   "tools": [
     {
       "id": "git",
@@ -25,6 +25,20 @@
       "version": "25.0.5",
       "filename": "openjdk-25.0.5-aarch64.tar.gz",
       "downloadUrl": "https://github.com/KudoPixel/lumina-packages/releases/download/v1.0.0/openjdk-25.0.5-aarch64.tar.gz"
+    },
+    {
+      "id": "zsh",
+      "name": "Zsh",
+      "version": "5.9.2",
+      "filename": "zsh-5.9.2-aarch64.tar.gz",
+      "downloadUrl": "https://github.com/KudoPixel/lumina-packages/releases/download/v1.0.0/zsh-5.9.2-aarch64.tar.gz"
+    },
+    {
+      "id": "aapt2",
+      "name": "AAPT2",
+      "version": "2.20-android-16.0.0_r4",
+      "filename": "aapt2-2.20-android-16.0.0_r4-aarch64.tar.gz",
+      "downloadUrl": "https://github.com/KudoPixel/lumina-packages/releases/download/v1.0.0/aapt2-2.20-android-16.0.0_r4-aarch64.tar.gz"
     }
   ]
 }
