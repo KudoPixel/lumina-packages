@@ -1,9 +1,9 @@
 {
   "schemaVersion": "1.0.0",
-  "manifestVersion": 2,
+  "manifestVersion": 3,
   "platform": "android",
   "architecture": "aarch64",
-  "updatedAt": "2026-10-28T14:45:44Z",
+  "updatedAt": "2026-10-28T16:26:21Z",
   "tools": [
     {
       "id": "git",
