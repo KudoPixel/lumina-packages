@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "1.0.0",
+  "manifestVersion": 1,
+  "platform": "android",
+  "architecture": "aarch64",
+  "updatedAt": "2026-10-28T14:03:36Z",
+  "tools": [
+    {
+      "id": "git",
+      "name": "Git",
+      "version": "2.56.0",
+      "filename": "git-2.56.0-aarch64.tar.gz",
+      "downloadUrl": "https://github.com/KudoPixel/lumina-packages/releases/download/v1.0.0/git-2.56.0-aarch64.tar.gz"
+    },
+    {
+      "id": "curl",
+      "name": "Curl",
+      "version": "8.23.0",
+      "filename": "curl-8.23.0-aarch64.tar.gz",
+      "downloadUrl": "https://github.com/KudoPixel/lumina-packages/releases/download/v1.0.0/curl-8.23.0-aarch64.tar.gz"
+    },
+    {
+      "id": "openjdk",
+      "name": "OpenJDK",
+      "version": "25.0.5",
+      "filename": "openjdk-25.0.5-aarch64.tar.gz",
+      "downloadUrl": "https://github.com/KudoPixel/lumina-packages/releases/download/v1.0.0/openjdk-25.0.5-aarch64.tar.gz"
+    }
+  ]
+}
