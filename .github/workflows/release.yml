@@ -1,0 +1,121 @@
+name: Release Binaries and Generate Manifest
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  release-and-manifest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Git Identity
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Download Binaries from Google Drive
+        run: |
+          # Download each binary with standardized versioned filenames
+          download_tool() {
+              local FILE_ID="$1"
+              local FILENAME="$2"
+              local URL="https://drive.usercontent.google.com/download?id=${FILE_ID}&export=download&confirm=t"
+              echo "Downloading $FILENAME..."
+              curl -sSL -o "$FILENAME" "$URL"
+          }
+
+          download_tool "1eiWhYPSOAdvPX4gAebBZs1G9sWli_0aH" "git-2.56.0-aarch64.tar.gz"
+          download_tool "1swSEEyfo2RxqeD6v14jAr67l8BILNakK" "curl-8.23.0-aarch64.tar.gz"
+          download_tool "1mlTuZvOq87EldaHWt4weTl1PtOQ_kLru" "openjdk-25.0.5-aarch64.tar.gz"
+
+          echo "Downloaded assets:"
+          ls -lh *.tar.gz
+
+      - name: Create GitHub Release and Upload Assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="v1.0.0"
+          
+          # Clean up existing release and tag if they already exist
+          gh release delete "$TAG" --yes || true
+          git push origin --delete "$TAG" || true
+          
+          # Create release and upload all aarch64 archives
+          gh release create "$TAG" \
+            -t "Lumina Binaries $TAG" \
+            --notes "" \
+            *-aarch64.tar.gz
+
+      - name: Generate Standardized Manifest
+        env:
+          REPO: ${{ github.repository }}
+        run: |
+          TAG="v1.0.0"
+          MANIFEST_DIR="android/aarch64"
+          MANIFEST_FILE="$MANIFEST_DIR/manifest.json"
+          
+          # Create directory structure if it doesn't exist
+          mkdir -p "$MANIFEST_DIR"
+          
+          # Handle manifest versioning (auto-increment if manifest exists, otherwise start at 1)
+          MANIFEST_VERSION=1
+          if [ -f "$MANIFEST_FILE" ]; then
+              CURRENT_VERSION=$(jq -r '.manifestVersion // 0' "$MANIFEST_FILE")
+              MANIFEST_VERSION=$((CURRENT_VERSION + 1))
+          fi
+          
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          
+          # Generate clean and robust JSON using jq
+          jq -n \
+            --arg schema "1.0.0" \
+            --argjson mVer "$MANIFEST_VERSION" \
+            --arg platform "android" \
+            --arg arch "aarch64" \
+            --arg updated "$TIMESTAMP" \
+            '{
+              schemaVersion: $schema,
+              manifestVersion: $mVer,
+              platform: $platform,
+              architecture: $arch,
+              updatedAt: $updated,
+              tools: [
+                {
+                  id: "git",
+                  name: "Git",
+                  version: "2.56.0",
+                  filename: "git-2.56.0-aarch64.tar.gz",
+                  downloadUrl: "https://github.com/\($ENV.REPO)/releases/download/v1.0.0/git-2.56.0-aarch64.tar.gz"
+                },
+                {
+                  id: "curl",
+                  name: "Curl",
+                  version: "8.23.0",
+                  filename: "curl-8.23.0-aarch64.tar.gz",
+                  downloadUrl: "https://github.com/\($ENV.REPO)/releases/download/v1.0.0/curl-8.23.0-aarch64.tar.gz"
+                },
+                {
+                  id: "openjdk",
+                  name: "OpenJDK",
+                  version: "25.0.5",
+                  filename: "openjdk-25.0.5-aarch64.tar.gz",
+                  downloadUrl: "https://github.com/\($ENV.REPO)/releases/download/v1.0.0/openjdk-25.0.5-aarch64.tar.gz"
+                }
+              ]
+            }' > "$MANIFEST_FILE"
+          
+          echo "Generated Manifest Content:"
+          cat "$MANIFEST_FILE"
+          
+          # Commit and push the manifest to the repository
+          git add "$MANIFEST_FILE"
+          git commit -m "chore(manifest): update to version $MANIFEST_VERSION for $TAG" || echo "No changes to commit"
+          git push
